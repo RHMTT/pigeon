@@ -1,11 +1,13 @@
-
+NOTE: Patching is one thing but having a rule that would define boxes that we can auto reboot ( Only if a reboot is needed ) and then boxed we would pre patch stage and have rebooted when approved.
 
 #Windows (Various Versions) 
 https://www.ansible.com/blog/windows-updates-and-ansible
 
 #Linux (Various Versions) 
+Can be patched with native package manage module i.e yum, apt etc or use the global package module.
 
 #BSD 
+BSD needs to have either python installed and then use standard modules or send it over via a raw command.
 
 #AIX 
 https://www.ansible.com/blog/aix-patch-management-with-ansible
