@@ -1,0 +1,35 @@
+---
+- hosts: Linux_servers
+  gather_facts: false 
+  tasks:
+  - name: Define files older than 7 days in dir "{{ mountpoint }}"
+    find:
+      paths: "{{ mountpoint }}"
+      age: 7d
+    register: files_to_delete
+  - name: Purge files older than 7 days in "{{ mountpoint }}"
+    file:
+      path: "{{ item.path }}"
+      state: absent
+    with_items: "{{ files_to_delete.files }}"
+  - name: gather facts
+    setup:
+  - name: Check Mount usage is now under 80%
+    assert:
+      that:
+          - item.mount != mountpoint or {{ item.mount == mountpoint and item.size_available > (item.size_total|float * 0.8) }}
+    with_items: "{{ ansible_mounts }}"
+    ignore_errors: yes
+    register: disk_free
+  - name: Telegram_fixed
+    telegram:
+      token: 496334137:AAFbcVPoKGejZBtMGeFqvqjqanrd6GbU_H8
+      chat_id: 26364712 
+      msg: "Ansible received and resolved an alert from Zabbix to clean up {{ mountpoint }} on {{ inventory_hostname }}."
+    when: disk_free|success
+  - name: Telegram_fixme
+    telegram:
+      token: 496334137:AAFbcVPoKGejZBtMGeFqvqjqanrd6GbU_H8
+      chat_id: 26364712 
+      msg: "Ansible received an alert from Zabbix to clean up {{ mountpoint }} on {{ inventory_hostname }}. However; after purging files older than 7 days old the disk is still saturated please investigate."
+    when: disk_free|failed

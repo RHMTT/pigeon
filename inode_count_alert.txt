@@ -1,0 +1,32 @@
+## Asking the rhetorical question "how many times have you logged in to remediate a disk space alert and the alert was already cleared?"
+## This playbook validates that the disk error was correct before it starts deleting large files.
+
+
+
+---
+- name: Generate a fatal error if /boot has less than 50MB free space
+  assert:
+    that:
+      - mount.size_available >= 52428800
+    msg: FATAL ERROR disk space on /boot is less than 50MB
+  vars:
+    mount: "{{ ansible_mounts | selectattr('mount','equalto','/boot') | list | first }}"
+- name: Ensure that We have at least 100MB Free disk space on our mounts
+  assert:
+    that:
+      - mount.size_available >= 104857600
+    msg: Disk space has less than 100MB Free
+  vars:
+    mount: "{{ ansible_mounts | selectattr('mount','equalto',item) | list | first }}"
+  with_items:
+    - "{{ my_mounts }}"
+  ignore_errors: True
+- name: Ensure that inodes is not less than 98% used
+  assert:
+    that:
+      - mount.inode_available > mount.inode_total|float * 0.02
+    msg: FATAL Disk inode has reached 98% threshold
+  vars:
+    mount: "{{ ansible_mounts | selectattr('mount','equalto',item) | list | first }}"
+  with_items:
+    - "{{ my_mounts }}"
