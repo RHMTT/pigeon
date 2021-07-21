@@ -1,0 +1,42 @@
+### Example patching Windows Server ###
+---
+- name: create snapshot, patch and reboot, restore if hosts fails to return
+  hosts: all
+  tasks:
+  - name: Check for missing updates
+    win_updates: 
+      category_names:
+        – Application
+        – Connectors
+        – DefinitionUpdates
+        – DeveloperKits
+        – FeaturePacks
+        – Guidance
+        – ServicePacks
+        – Tools
+        – UpdateRollups
+        – CriticalUpdates
+        – SecurityUpdates
+      state: searched
+    register: update_count
+
+  - name: Apply missing updates
+    win_updates:
+      category_names:
+        – Application
+        – Connectors
+        – DefinitionUpdates
+        – DeveloperKits
+        – FeaturePacks
+        – Guidance
+        – ServicePacks
+        – Tools
+        – UpdateRollups
+        – CriticalUpdates
+        – SecurityUpdates
+      state: installed
+    register: update_result
+
+    # reboot only if required
+  - name: reboot
+    win_reboot:
