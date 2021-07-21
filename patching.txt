@@ -30,10 +30,13 @@ https://clouddocs.f5.com/products/orchestration/ansible/devel/
 
 #Vmware 
 Examples of deploying from template.  
-https://docs.ansible.com/ansible/latest/scenario_guides/vmware_scenarios/scenario_clone_template.html
+-https://docs.ansible.com/ansible/latest/scenario_guides/vmware_scenarios/scenario_clone_template.html
 
 Hypervisor management is also possible
-https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_host_module.html
+-https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_host_module.html
+
+Here are some good prescriptive scenarios
+-https://docs.ansible.com/ansible/devel/scenario_guides/vmware_rest_scenarios/collect_information.html
 
 #Hyper-V 
 Same as Windows patching
