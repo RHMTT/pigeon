@@ -1,0 +1,38 @@
+
+
+#Windows (Various Versions) 
+https://www.ansible.com/blog/windows-updates-and-ansible
+
+#Linux (Various Versions) 
+
+#BSD 
+
+#AIX 
+https://www.ansible.com/blog/aix-patch-management-with-ansible
+
+#HP-UX 
+https://docs.ansible.com/ansible/latest/collections/community/general/swdepot_module.html
+
+#AS400(iSeries) 
+https://www.ibm.com/support/pages/ansible-support-ibm-i
+Might be using the `raw` command where these features don't cover the needs
+
+#Solaris 
+https://docs.ansible.com/ansible/latest/collections/community/general/solaris_zone_module.html
+
+#Cisco (Various Versions) 
+https://www.ansible.com/integrations/networks/cisco
+
+#F5 
+https://clouddocs.f5.com/products/orchestration/ansible/devel/
+
+#Vmware 
+Examples of deploying from template.  
+https://docs.ansible.com/ansible/latest/scenario_guides/vmware_scenarios/scenario_clone_template.html
+
+Hypervisor management is also possible
+https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_host_module.html
+
+#Hyper-V 
+Same as Windows patching
+
