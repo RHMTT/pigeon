@@ -1,51 +1,77 @@
-Monitoring has alerted high disk space usage on
-a Linux server. Would like to automate the following: 
-&quot;
-1. Gain access to customer environment Following appropriate customer documentation. 
-THIS IS PART OF THE FLOW PRE ANSIBLE
-2. Use df -i; command to determine inode resource utilisation for all file systems. 
-USE Ansible Facts for this would be similar to this
-  - name: Ensure that inodes is not less than 90% used
-    assert:
-      that:
-        - mount.inode_available > mount.inode_total|float * 0.10
-      msg: FATAL Disk inode has reached 98% threshold
-    vars:
-      mount: "{{ ansible_mounts | selectattr('mount','equalto',item) | list | first }}"
-    with_items:
-      - "{{ ansible_mounts }}"
-    ignore_errors: yes
-    register: disk_inodes
-    name: Something from inodes in the play
-    debug:
-      msg: "SOME MESSAGE OR ACTION"
-    when: disk_inodes|failed
-3. Use the find command to determine the most likely 10 candidate directories with the highest inode utilisation:
- Needs to have some considerations based on this i.e no file newer since last backup taken, as well as cant be in specific locations like / or /etc /usr/bin etc etc, the alert will be able to flag the mount point in question so we do not need to have ansible parse all mounts instead we will present a variable called mount.
- Basic Example
-   - name: Define files older than 7 days in dir "{{ mountpoint }}"
-    find:
-      paths: "{{ mountpoint }}"
-      age: 7d
-    register: files_to_delete
-  - name: Purge files older than 7 days in "{{ mountpoint }}"
-    file:
-      path: "{{ item.path }}"
-      state: absent
-    with_items: "{{ files_to_delete.files }}"
-  - name: gather facts
-    setup:
-  - name: Check Mount usage is now under 80%
-    assert:
-      that:
-          - item.mount != mountpoint or {{ item.mount == mountpoint and item.size_available > (item.size_total|float * 0.8) }}
-    with_items: "{{ ansible_mounts }}"
-    ignore_errors: yes
-    register: disk_free
-4. Use the lsof; command to determine the process(es) using the files in the dictories determined in step 3
-USE THE REGISTERED OUTPUT OF ABOVE AND PASS IT THROUGH WITH PIDS
-- name: Getting process IDs of the process
-  pids:
-      name: python
-  register: pids_of_python
- 
+	Monitoring has alerted high disk space usage on
+	a Linux server. Would like to automate the following: 
+	&quot;
+	1. Gain access to customer environment Following appropriate customer documentation. 
+	THIS IS PART OF THE FLOW PRE ANSIBLE
+
+	2. Use df -i; command to determine inode resource utilisation for all file systems. 
+	USE Ansible Facts for this would be similar to this
+
+	  - name: Ensure that inodes is not less than 90% used
+	    assert:
+	      that:
+		- mount.inode_available > mount.inode_total|float * 0.10
+	      msg: FATAL Disk inode has reached 98% threshold
+	    vars:
+	      mount: "{{ ansible_mounts | selectattr('mount','equalto',item) | list | first }}"
+	    with_items:
+	      - "{{ ansible_mounts }}"
+	    ignore_errors: yes
+	    register: disk_inodes
+
+	    name: Something from inodes in the play
+	    debug:
+	      msg: "SOME MESSAGE OR ACTION"
+	    when: disk_inodes|failed
+
+	3. Use the find
+	 command to determine the most likely 10 candidate directories with the highest inode utilisation:
+	can have multiple options, file age, file size etc etc
+	https://docs.ansible.com/ansible/latest/collections/ansible/builtin/find_module.html
+	 
+	 Needs to have some considerations based on this i.e no file newer since last backup taken, as well as cant be in specific locations like / or /etc /usr/bin etc etc, the alert will be able to flag the mount point in question so we do not need to have ansible parse all mounts instead we will present a variable called mount.
+	 
+	 Basic Example
+	   - name: Define files older than 7 days in dir "{{ mountpoint }}"
+	    find:
+	      paths: "{{ mountpoint }}"
+	      age: 7d
+	    register: files_to_delete
+
+	  - name: Purge files older than 7 days in "{{ mountpoint }}"
+	    file:
+	      path: "{{ item.path }}"
+	      state: absent
+	    with_items: "{{ files_to_delete.files }}"
+	    
+	  - name: gather facts
+	    setup:
+
+	  - name: Check Mount usage is now under 80%
+	    assert:
+	      that:
+		  - item.mount != mountpoint or {{ item.mount == mountpoint and item.size_available > (item.size_total|float * 0.8) }}
+	    with_items: "{{ ansible_mounts }}"
+	    ignore_errors: yes
+	    register: disk_free
+	 
+
+	4. Use the lsof; command to determine the process(es) using the files in the dictories determined in step 3
+	USE THE REGISTERED OUTPUT OF ABOVE AND PASS IT THROUGH WITH PIDS
+	- name: Getting process IDs of the process
+	  pids:
+	      name: python
+	  register: pids_of_python
+	  
+	 
+5. Similar to above but use the service module based on registered output
+
+6. With customer approvals I would suggest hooking this into tool like Service Now where we update tickets and then when approved etc can tell Ansible Tower to execute over the API.
+
+7. Re run check of inodes.
+
+8. use lvol etc modules for this, report before and after and add to tickets.
+
+9. Have ansible generate SOS report module and roles for this based on needs.
+
+10. Notifications can be done via email, slack, snow etc etc
