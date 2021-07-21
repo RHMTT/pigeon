@@ -2,4 +2,4 @@
 
 These playbooks come with no guarantees, written or implied and they actually might not work as expected.
 
-We're uploading them as we sort through them as of 7/21/2021
+We're uploading and adding to this collection as we sort through them in real time as of 7/21/2021
